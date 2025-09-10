@@ -39,6 +39,12 @@ private Integer quantidade;
 private Double precoUnitario;
 
 
+public ItemVenda(OrdemVenda ordemVenda,int quantidade,double precoUnitario){
+    this.ordemVenda=ordemVenda;
+    this.quantidade=quantidade;
+    this.precoUnitario=precoUnitario;
+}
+
 
 
     public double getValorTotal() {
