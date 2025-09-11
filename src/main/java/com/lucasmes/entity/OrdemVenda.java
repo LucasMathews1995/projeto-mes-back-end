@@ -3,7 +3,7 @@ package com.lucasmes.entity;
 import java.util.ArrayList;
 import java.util.List;
 
-import com.lucasmes.DTO.OrdemProducaoDTO;
+import com.lucasmes.DTO.OrdemProducao.OrdemProducaoDTO;
 
 import io.micrometer.common.lang.NonNull;
 import jakarta.persistence.*;

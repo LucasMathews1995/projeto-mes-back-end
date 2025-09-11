@@ -1,12 +1,14 @@
 package com.lucasmes.entity;
 
 import java.time.LocalDate;
-
+import java.util.ArrayList;
+import java.util.List;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.EnumType;
 import jakarta.persistence.Enumerated;
+import jakarta.persistence.FetchType;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
@@ -50,9 +52,14 @@ public class Lote {
 
 
 
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name= "op_id")
     private OrdemProducao ordemProducao;
+
+
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name= "op_equipamento")
+    private List<Equipamento> equipamentos;
 
 
     public Lote(String numeroLote,double peso, double largura,double espessura, OrdemProducao ordemProducao){
@@ -63,6 +70,7 @@ public class Lote {
         this.progresso =0.0;
         this.status=  null;
         this.ordemProducao = ordemProducao;
+        this.equipamentos = new ArrayList<>();
 
 
     }
@@ -119,19 +127,32 @@ public class Lote {
     }
 
 
-    public void repartirPeso(double pesoRepartido){
+    public List<Lote> repartirPeso(double pesoRepartido){
+        List<Lote> lotes= new ArrayList<>();
         if(this.peso > pesoRepartido){
          double  pesoRestante = peso-pesoRepartido;
          Lote l1 = new Lote(getNumeroLote()+1,pesoRepartido,getLargura(),getEspessura(),getOrdemProducao());
          l1.setDataCriacao(LocalDate.now());
          Lote l2 = new Lote(getNumeroLote()+2,pesoRestante,getLargura(),getEspessura(),getOrdemProducao());
          l2.setDataCriacao(LocalDate.now());
+         lotes.add(l1);
+        lotes.add(l2);
+            return lotes;
         }else {
             throw new IllegalStateException("Impossível repartir  devido ao peso do lote mãe ser maior que o lote filho");
         }
         
     }
 
+
+    public void addEquipamento(Equipamento ep ){
+        this.equipamentos.add(ep);
+        ep.setLote(this);
+    }
+    public void removerEquipamento(Equipamento ep){
+        this.equipamentos.remove(ep);
+        ep.setLote(null);
+    }
 
 
 
