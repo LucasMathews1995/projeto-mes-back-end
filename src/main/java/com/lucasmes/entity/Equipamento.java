@@ -3,11 +3,13 @@ package com.lucasmes.entity;
 
 
 import jakarta.persistence.CascadeType;
+import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
-
+import jakarta.persistence.JoinColumn;
+import jakarta.persistence.ManyToOne;
 import jakarta.persistence.OneToMany;
 import jakarta.persistence.Table;
 import lombok.Getter;
@@ -24,9 +26,10 @@ public class Equipamento {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @OneToMany(mappedBy = "equipamento", cascade = CascadeType.ALL)
+   @ManyToOne
+    @JoinColumn(name = "lote_id")
     private Lote lote;
-
+@Column(nullable = false)
     private String name;
 
 

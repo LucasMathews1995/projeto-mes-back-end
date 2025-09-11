@@ -4,6 +4,7 @@ import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
 
+import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.EnumType;
@@ -14,6 +15,7 @@ import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
+import jakarta.persistence.OneToMany;
 import jakarta.persistence.Table;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -32,11 +34,11 @@ public class Lote {
     private Long id;
     @Column(unique = true)
     private String numeroLote;
-    @NonNull
+   @Column(nullable = false)
     private Double peso;
-      @NonNull
+     @Column(nullable = false)
     private Double largura;
-      @NonNull
+      @Column(nullable = false)
     private Double espessura;
       
     private LocalDate dataCriacao;
@@ -57,8 +59,7 @@ public class Lote {
     private OrdemProducao ordemProducao;
 
 
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name= "op_equipamento")
+    @OneToMany(mappedBy = "lote", cascade = CascadeType.ALL)
     private List<Equipamento> equipamentos;
 
 

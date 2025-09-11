@@ -31,7 +31,7 @@ public class ItemVenda {
 
 
 
-@NonNull
+
 @Column(nullable = false)
 private Integer quantidade;
 

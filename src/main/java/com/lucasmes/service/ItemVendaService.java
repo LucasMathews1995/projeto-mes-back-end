@@ -13,7 +13,7 @@ import org.springframework.stereotype.Service;
 import com.lucasmes.DTO.ItemVendaDTO;
 import com.lucasmes.entity.ItemVenda;
 import com.lucasmes.entity.OrdemVenda;
-import com.lucasmes.exception.OrdemVendaException;
+import com.lucasmes.exception.OrdemVendaNotFoundException;
 import com.lucasmes.repository.ItemVendaRepository;
 import com.lucasmes.repository.OrdemVendaRepository;
 
@@ -36,7 +36,7 @@ public class ItemVendaService {
 
     @Transactional
     public ItemVenda saveItemVendas(ItemVendaDTO dto){
-     OrdemVenda ordemVenda =   ordemVendaRepository.findByNumeroOV(dto.ordemVenda()).orElseThrow(()-> new OrdemVendaException("Ordem de venda não encontrada"));
+     OrdemVenda ordemVenda =   ordemVendaRepository.findByNumeroOV(dto.ordemVenda()).orElseThrow(()-> new OrdemVendaNotFoundException("Ordem de venda não encontrada"));
         ItemVenda itemVenda = new ItemVenda(ordemVenda,dto.quantidade(),dto.precoUnitario());
         
 
@@ -58,7 +58,7 @@ public class ItemVendaService {
         List<ItemVenda> itemVendas = new ArrayList<>();
        for(ItemVendaDTO iv : dto){
            OrdemVenda ordemVenda = ordemVendaRepository.findByNumeroOV(iv.ordemVenda())
-           .orElseThrow(()-> new OrdemVendaException("Ordem de venda não encontrada"));
+           .orElseThrow(()-> new OrdemVendaNotFoundException("Ordem de venda não encontrada"));
             ItemVenda itemVenda = new ItemVenda(ordemVenda,iv.quantidade(),iv.precoUnitario());
             itemVendas.add(itemVenda);
        }

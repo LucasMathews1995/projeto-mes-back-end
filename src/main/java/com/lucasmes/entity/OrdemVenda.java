@@ -2,36 +2,35 @@ package com.lucasmes.entity;
 
 import java.util.ArrayList;
 import java.util.List;
-
 import com.lucasmes.DTO.OrdemProducao.OrdemProducaoDTO;
-
-import io.micrometer.common.lang.NonNull;
 import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 
-@Entity
+
 @Table(name= "tb_ordem-venda")
 @Getter
 @Setter
 @NoArgsConstructor
+@Entity
 public class OrdemVenda {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     Long id;
+
     @Column(nullable = false)
     private String cliente;
-    @NonNull
+    
     @Column(nullable = false)
     private String numeroOV;
 
     @OneToMany(mappedBy = "ordemVenda", cascade = CascadeType.ALL)
     private List<OrdemProducao> ordensProducao;
 
-    @OneToMany(mappedBy = "ordemVenda",cascade = CascadeType.ALL)
+    @OneToMany(mappedBy = "ordemVenda",cascade = CascadeType.ALL, orphanRemoval =  true)
     private List<ItemVenda> itemVendas;
 
 

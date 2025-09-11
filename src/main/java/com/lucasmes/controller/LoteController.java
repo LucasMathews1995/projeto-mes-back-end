@@ -87,6 +87,14 @@ public ResponseEntity<String> repartirPeso(@PathVariable Long id , @RequestParam
     
 
 }
+@PostMapping("/{id}/cancelarLote")
+public ResponseEntity<String> cancelarLote(@PathVariable Long id){
+    Lote lote = service.cancelarLote(id);
+
+    String message = String.format("Lote : %s foi cancelado", lote.getNumeroLote());
+
+    return ResponseEntity.ok(message);
+}
 
 
 

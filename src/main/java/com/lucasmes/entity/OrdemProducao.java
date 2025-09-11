@@ -3,7 +3,7 @@ package com.lucasmes.entity;
 import java.util.ArrayList;
 import java.util.List;
 
-import io.micrometer.common.lang.NonNull;
+
 import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
@@ -32,9 +32,9 @@ public class OrdemProducao {
 private Long id;
 @Column(unique = true)
 private String numeroOP;
-@NonNull
+@Column(nullable = false)
 private Integer quantidade;
-@NonNull
+@Column(nullable = false)
 private String material;
 
 @ManyToOne(fetch = FetchType.LAZY)

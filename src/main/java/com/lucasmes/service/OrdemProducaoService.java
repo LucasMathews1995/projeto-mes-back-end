@@ -12,8 +12,8 @@ import com.lucasmes.DTO.OrdemProducao.OrdemProducaoDTO;
 import com.lucasmes.entity.Lote;
 import com.lucasmes.entity.OrdemProducao;
 import com.lucasmes.entity.OrdemVenda;
-import com.lucasmes.exception.OrdemProducaoException;
-import com.lucasmes.exception.OrdemVendaException;
+import com.lucasmes.exception.OrdemProducaoNotFoundException;
+import com.lucasmes.exception.OrdemVendaNotFoundException;
 import com.lucasmes.repository.LoteRepository;
 import com.lucasmes.repository.OrdemProducaoRepository;
 import com.lucasmes.repository.OrdemVendaRepository;
@@ -43,7 +43,7 @@ private LoteRepository lotesRepository;
         List<OrdemProducao> listaProducao = new ArrayList<>();
         for(OrdemProducaoDTO dto: dtos){  
 
-            OrdemVenda ordemVenda = ovRepository.findByName(dto.ordemVenda()).orElseThrow(()-> new OrdemVendaException("Não foi encontrada nenhuma ordem de venda"));
+            OrdemVenda ordemVenda = ovRepository.findByName(dto.ordemVenda()).orElseThrow(()-> new OrdemVendaNotFoundException("Não foi encontrada nenhuma ordem de venda"));
             OrdemProducao producao = new OrdemProducao(dto.numeroOP(),dto.material(),ordemVenda);
             listaProducao.add(producao);
         
@@ -53,7 +53,7 @@ private LoteRepository lotesRepository;
        
     }
     public OrdemProducao salvarOP(OrdemProducaoDTO dto) {
-  OrdemVenda ordemVenda = ovRepository.findByName(dto.ordemVenda()).orElseThrow(()-> new OrdemVendaException("Não foi encontrada nenhuma ordem de venda"));
+  OrdemVenda ordemVenda = ovRepository.findByName(dto.ordemVenda()).orElseThrow(()-> new OrdemVendaNotFoundException("Não foi encontrada nenhuma ordem de venda"));
             OrdemProducao producao = new OrdemProducao(dto.numeroOP(),dto.material(),ordemVenda);
             return repository.save(producao);
         
@@ -61,8 +61,8 @@ private LoteRepository lotesRepository;
 
 
     public List<OrdemProducao> buscarPorOrdemVenda(String ovName) {
-        OrdemVenda ordemVenda = ovRepository.findByName(ovName).orElseThrow(()-> new OrdemVendaException("Não foi encontrada nenhuma ordem de venda"));
-        List<OrdemProducao> listaProducao = repository.findByOrdemVenda(ordemVenda).orElseThrow(()-> new OrdemVendaException("não existe nenhuma OV associada  essa OP"));
+        OrdemVenda ordemVenda = ovRepository.findByName(ovName).orElseThrow(()-> new OrdemVendaNotFoundException("Não foi encontrada nenhuma ordem de venda"));
+        List<OrdemProducao> listaProducao = repository.findByOrdemVenda(ordemVenda).orElseThrow(()-> new OrdemVendaNotFoundException("não existe nenhuma OV associada  essa OP"));
         if(listaProducao==null || listaProducao.isEmpty()){
             return null;
         }
@@ -72,7 +72,7 @@ private LoteRepository lotesRepository;
     @Transactional
     public OrdemProducao mudarOP(Long id, OrdemProducao opAtualizada) {
        
-        OrdemProducao op  = repository.findById(id).orElseThrow(()-> new OrdemVendaException("Ordem de produção não encontrada"));
+        OrdemProducao op  = repository.findById(id).orElseThrow(()-> new OrdemVendaNotFoundException("Ordem de produção não encontrada"));
 
         op.setLotes(opAtualizada.getLotes());
         op.setMaterial(opAtualizada.getMaterial());
@@ -87,7 +87,7 @@ private LoteRepository lotesRepository;
     }
     @Transactional
     public OrdemProducao adicionarLotes(Long opId, List<Long> idLotes){
-        OrdemProducao op = repository.findById(opId).orElseThrow(()-> new OrdemProducaoException("Não foi encontrada nenhuma Ordem de Produção com esse id"));
+        OrdemProducao op = repository.findById(opId).orElseThrow(()-> new OrdemProducaoNotFoundException("Não foi encontrada nenhuma Ordem de Produção com esse id"));
         List<Lote> lotes =lotesRepository.findAllById(idLotes);
      
      for(Lote l : lotes)
@@ -100,7 +100,7 @@ private LoteRepository lotesRepository;
     }
     @Transactional
 public OrdemProducao deletarLotes(Long opId, List<Long> idLotes){
-        OrdemProducao op = repository.findById(opId).orElseThrow(()-> new OrdemProducaoException("Não foi encontrada nenhuma Ordem de Produção com esse id"));
+        OrdemProducao op = repository.findById(opId).orElseThrow(()-> new OrdemProducaoNotFoundException("Não foi encontrada nenhuma Ordem de Produção com esse id"));
         List<Lote> lotes =lotesRepository.findAllById(idLotes);
      
      for(Lote l : lotes)
@@ -114,7 +114,7 @@ public OrdemProducao deletarLotes(Long opId, List<Long> idLotes){
   @Transactional
     public OrdemProducao buscarPorId(Long id ){
 
-        OrdemProducao  op = repository.findById(id).orElseThrow(()-> new OrdemProducaoException(("Não foi encontrada nenhuma Ordem de Produção com esse id")));
+        OrdemProducao  op = repository.findById(id).orElseThrow(()-> new OrdemProducaoNotFoundException(("Não foi encontrada nenhuma Ordem de Produção com esse id")));
 
 
         return op;

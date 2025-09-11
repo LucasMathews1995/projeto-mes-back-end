@@ -11,7 +11,7 @@ import com.lucasmes.entity.Lote;
 import com.lucasmes.entity.OrdemProducao;
 import com.lucasmes.exception.EquipamentoNotFoundException;
 import com.lucasmes.exception.LoteNotFoundException;
-import com.lucasmes.exception.OrdemVendaException;
+import com.lucasmes.exception.OrdemVendaNotFoundException;
 import com.lucasmes.repository.EquipamentoRepository;
 import com.lucasmes.repository.LoteRepository;
 import com.lucasmes.repository.OrdemProducaoRepository;
@@ -45,7 +45,7 @@ public class LoteService {
        for(LoteDTO lote : dto){
             OrdemProducao ordemProducao = ordemProducaoRepository
             .findByNumeroOP(lote.ordemProducao())
-           .orElseThrow(()-> new OrdemVendaException("Ordem de produção não encontrada"));
+           .orElseThrow(()-> new OrdemVendaNotFoundException("Ordem de produção não encontrada"));
 
             Lote loteEach = new Lote(lote.numeroLote(),lote.peso(),lote.largura()
             ,lote.espessura(),ordemProducao);
