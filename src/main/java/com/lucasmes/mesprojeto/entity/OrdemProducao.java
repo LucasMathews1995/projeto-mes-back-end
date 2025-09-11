@@ -48,12 +48,21 @@ private List<Lote> lotes;
 
 
 
-public OrdemProducao(String numeroOP,String material,OrdemVenda ordemVenda){
+public OrdemProducao(String numeroOP,Integer quantidade,String material,OrdemVenda ordemVenda){
 this.numeroOP=numeroOP;
 this.material=material;
 this.ordemVenda=ordemVenda;
 lotes= new ArrayList<>();
 this.quantidade=lotes.size();
+this.quantidade = quantidade;
+}
+public OrdemProducao(String numeroOP,Integer quantidade,String material){
+this.numeroOP=numeroOP;
+this.material=material;
+
+lotes= new ArrayList<>();
+this.quantidade=lotes.size();
+this.quantidade = quantidade;
 }
 
 

@@ -3,12 +3,14 @@ package com.lucasmes.mesprojeto.service;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
+import java.util.Random;
 
 import org.springframework.beans.factory.annotation.Autowired;
 
 import org.springframework.stereotype.Service;
 
 import com.lucasmes.mesprojeto.DTO.OrdemProducao.OrdemProducaoDTO;
+import com.lucasmes.mesprojeto.DTO.OrdemProducao.OrdemProducaoDTOSender;
 import com.lucasmes.mesprojeto.entity.Lote;
 import com.lucasmes.mesprojeto.entity.OrdemProducao;
 import com.lucasmes.mesprojeto.entity.OrdemVenda;
@@ -39,36 +41,55 @@ private LoteRepository lotesRepository;
         }
         return listaOP;
     }
-    public List<OrdemProducao> salvarTodasOP(List<OrdemProducaoDTO> dtos){
+    public List<OrdemProducaoDTOSender> salvarTodasOP(List<OrdemProducaoDTO> dtos){
         List<OrdemProducao> listaProducao = new ArrayList<>();
+         List<OrdemProducaoDTOSender> senders = new ArrayList<>();
         for(OrdemProducaoDTO dto: dtos){  
-
+ Random random = new Random();
+    Integer numeroAleatorio=   random.nextInt(100000000);
+  StringBuilder st =new StringBuilder();
+  String messagefinal = st.append("OP").append(numeroAleatorio.toString()).toString();
             OrdemVenda ordemVenda = ovRepository.findByCliente(dto.clienteOrdemVenda()).orElseThrow(()-> new OrdemVendaNotFoundException("Não foi encontrada nenhuma ordem de venda"));
-            OrdemProducao producao = new OrdemProducao(dto.numeroOP(),dto.material(),ordemVenda);
+            OrdemProducao producao = new OrdemProducao(messagefinal,dto.quantidade(),dto.material(),ordemVenda);
+            OrdemProducaoDTOSender  sender= new OrdemProducaoDTOSender(messagefinal,producao.getQuantidade(),producao.getMaterial(),producao.getOrdemVenda().getNumeroOV());
             listaProducao.add(producao);
-        
+            senders.add(sender);
         }
-        return repository.saveAll(listaProducao);
       
        
+       repository.saveAll(listaProducao);
+        return senders;
+       
     }
-    public OrdemProducaoDTO salvarOP(OrdemProducaoDTO dto) {
+    public OrdemProducaoDTOSender salvarOP(OrdemProducaoDTO dto) {
   OrdemVenda ordemVenda = ovRepository.findByCliente(dto.clienteOrdemVenda()).orElseThrow(()-> new OrdemVendaNotFoundException("Não foi encontrada nenhuma ordem de venda"));
-            OrdemProducao producao = new OrdemProducao(dto.numeroOP(),dto.material(),ordemVenda);
+ Random random = new Random();
+    Integer numeroAleatorio=   random.nextInt(100000000);
+  StringBuilder st =new StringBuilder();
+  String messagefinal = st.append("OP").append(numeroAleatorio.toString()).toString();
+            OrdemProducao producao = new OrdemProducao(messagefinal,dto.quantidade(),dto.material(),ordemVenda);
 repository.save(producao);
-        return new   OrdemProducaoDTO(producao.getNumeroOP(),producao.getMaterial(),producao.getOrdemVenda().getNumeroOV());
+        return new   OrdemProducaoDTOSender(producao.getNumeroOP(),producao.getQuantidade(),producao.getMaterial(),producao.getOrdemVenda().getNumeroOV());
            
         
     }
 
 
-    public List<OrdemProducao> buscarPorOrdemVenda(String ovName) {
+    public List<OrdemProducaoDTOSender> buscarPorOrdemVenda(String ovName) {
         OrdemVenda ordemVenda = ovRepository.findByCliente(ovName).orElseThrow(()-> new OrdemVendaNotFoundException("Não foi encontrada nenhuma ordem de venda"));
         List<OrdemProducao> listaProducao = repository.findByOrdemVenda(ordemVenda).orElseThrow(()-> new OrdemVendaNotFoundException("não existe nenhuma OV associada  essa OP"));
+        List<OrdemProducaoDTOSender> sender = new ArrayList<>();
+        for (OrdemProducao ordemProducao : listaProducao) {
+          OrdemProducaoDTOSender op = new OrdemProducaoDTOSender(ordemProducao.getNumeroOP(),ordemProducao.getQuantidade(),ordemProducao.getMaterial(),ordemProducao.getOrdemVenda().getCliente());
+          sender.add(op);
+        }
+        
+        
+        
         if(listaProducao==null || listaProducao.isEmpty()){
             return null;
         }
-        return listaProducao;
+        return sender;
 
     }
     @Transactional

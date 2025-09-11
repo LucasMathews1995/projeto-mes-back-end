@@ -3,7 +3,8 @@ package com.lucasmes.mesprojeto.entity;
 import java.util.ArrayList;
 import java.util.List;
 
-import com.lucasmes.mesprojeto.DTO.OrdemProducao.OrdemProducaoDTO;
+
+import com.lucasmes.mesprojeto.DTO.OrdemProducao.OrdemProducaoDTOOv;
 
 import jakarta.persistence.*;
 import lombok.Getter;
@@ -54,15 +55,15 @@ public class OrdemVenda {
 
     }
 
-    public String gerarOrdensProducao(List<OrdemProducaoDTO> ops){
+    public String gerarOrdensProducao(List<OrdemProducaoDTOOv> ops){
 
         if(this.ordensProducao!=null && !this.ordensProducao.isEmpty()){
            return "Produções já foram iniciadas para venda";
         }
         this.ordensProducao = new ArrayList<>();
-        for(OrdemProducaoDTO op : ops ){
-            OrdemProducao ordensP = new OrdemProducao(op.numeroOP(),op.material(),this);
-            addOP(ordensP);
+        for(OrdemProducaoDTOOv op : ops ){
+            OrdemProducao ordensP = new OrdemProducao(op.numeroOP(),op.quantidade(),op.material(),this);
+            this.addOP(ordensP);
             
         }
         return "Produções iniciadas para vendas";
@@ -70,7 +71,7 @@ public class OrdemVenda {
    public double receitaLiquida(){
     double result =0;
     for(ItemVenda  v : itemVendas){
-      result= result+   v.getValorTotal();
+      result= result +   v.getValorTotal();
     }
     return result;
     

@@ -1,5 +1,6 @@
 package com.lucasmes.mesprojeto.controller;
 
+
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -18,6 +19,7 @@ import org.springframework.web.bind.annotation.RestController;
 import com.lucasmes.mesprojeto.DTO.OrdemProducao.AdicionarLotesDTO;
 import com.lucasmes.mesprojeto.DTO.OrdemProducao.DeletarLotesDTO;
 import com.lucasmes.mesprojeto.DTO.OrdemProducao.OrdemProducaoDTO;
+import com.lucasmes.mesprojeto.DTO.OrdemProducao.OrdemProducaoDTOSender;
 import com.lucasmes.mesprojeto.entity.OrdemProducao;
 import com.lucasmes.mesprojeto.service.OrdemProducaoService;
 
@@ -43,8 +45,8 @@ return ResponseEntity.noContent().build();
     return ResponseEntity.ok(ordensProducao);
 }
 @PostMapping("/save-all")
-public ResponseEntity<List<OrdemProducao>> salvarTodasOP(List<OrdemProducaoDTO> dto){
-List<OrdemProducao> ordensProducao = service.salvarTodasOP(dto);
+public ResponseEntity<List<OrdemProducaoDTOSender>> salvarTodasOP(@RequestBody List<OrdemProducaoDTO> dto){
+List<OrdemProducaoDTOSender> ordensProducao = service.salvarTodasOP(dto);
 
 
 if(ordensProducao.isEmpty() || ordensProducao==null){
@@ -57,8 +59,8 @@ return ResponseEntity.ok(ordensProducao);
 
 
 @PostMapping("/save")
-public ResponseEntity<OrdemProducaoDTO> salvarOP(@RequestBody OrdemProducaoDTO dto){
-    OrdemProducaoDTO op = service.salvarOP(dto);
+public ResponseEntity<OrdemProducaoDTOSender> salvarOP(@RequestBody OrdemProducaoDTO dto){
+    OrdemProducaoDTOSender op = service.salvarOP(dto);
 
 
       return new ResponseEntity<>(op, HttpStatus.CREATED);
@@ -66,10 +68,10 @@ public ResponseEntity<OrdemProducaoDTO> salvarOP(@RequestBody OrdemProducaoDTO d
 }
 
 
-@GetMapping("buscarOV/{ovName}")
-public ResponseEntity<List<OrdemProducao>> buscarPorOV(@PathVariable String ovName){
+@GetMapping("/buscarOV/{ovName}")
+public ResponseEntity<List<OrdemProducaoDTOSender>> buscarPorOV(@PathVariable String ovName){
 
-    List<OrdemProducao> listProducao = service.buscarPorOrdemVenda(ovName);
+    List<OrdemProducaoDTOSender> listProducao = service.buscarPorOrdemVenda(ovName);
     if(listProducao==null ||listProducao.isEmpty()){
         return ResponseEntity.noContent().build();
     }

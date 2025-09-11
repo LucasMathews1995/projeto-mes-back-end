@@ -1,17 +1,13 @@
 package com.lucasmes.mesprojeto.service;
 
 
-
-
-
 import java.util.Collections;
 import java.util.List;
 import java.util.Random;
 import java.util.stream.Collectors;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-
-import com.lucasmes.mesprojeto.DTO.OrdemProducao.OrdemProducaoDTO;
+import com.lucasmes.mesprojeto.DTO.OrdemProducao.OrdemProducaoDTOOv;
 import com.lucasmes.mesprojeto.DTO.ordemVenda.OrdemVendaDTO;
 import com.lucasmes.mesprojeto.entity.OrdemProducao;
 import com.lucasmes.mesprojeto.entity.OrdemVenda;
@@ -135,7 +131,7 @@ public String atualizarOrdemPorNome(Long id) {
 
 }
 
-public String gerarOrdemProducao(Long id , OrdemProducaoDTO op ){
+public String gerarOrdemProducao(Long id , OrdemProducaoDTOOv op ){
      OrdemVenda ov = repository.findById(id).orElseThrow(()-> new OrdemVendaNotFoundException("Ordem de venda não encontrada")); 
      OrdemProducao opAtualizada = opRepository.findByNumeroOP(op.numeroOP()).orElseThrow(()-> new OrdemProducaoNotFoundException("OP não encontrada , tente outro nome"));
      ov.addOP(opAtualizada);
@@ -144,11 +140,11 @@ public String gerarOrdemProducao(Long id , OrdemProducaoDTO op ){
 
 }
 
-public String gerarOrdensProducao(Long id, List<OrdemProducaoDTO> dtos){
+public String gerarOrdensProducao(Long id, List<OrdemProducaoDTOOv> dtos){
      OrdemVenda ov = repository.findById(id).orElseThrow(()-> new OrdemVendaNotFoundException("Ordem de venda não encontrada")); 
      StringBuilder st =new StringBuilder();
      
-     for(OrdemProducaoDTO dto : dtos){
+     for(OrdemProducaoDTOOv dto : dtos){
         OrdemProducao op = new OrdemProducao();
         op.setMaterial(dto.material());
         op.setNumeroOP(dto.numeroOP());

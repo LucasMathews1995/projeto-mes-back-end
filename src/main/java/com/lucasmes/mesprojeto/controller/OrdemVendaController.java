@@ -17,6 +17,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.lucasmes.mesprojeto.DTO.OrdemProducao.OrdemProducaoDTO;
+import com.lucasmes.mesprojeto.DTO.OrdemProducao.OrdemProducaoDTOOv;
 import com.lucasmes.mesprojeto.DTO.ordemVenda.OrdemVendaDTO;
 import com.lucasmes.mesprojeto.DTO.ordemVenda.OrdemVendaIdDTO;
 import com.lucasmes.mesprojeto.entity.OrdemVenda;
@@ -102,7 +103,7 @@ return ResponseEntity.ok(message);
 
 
   @PostMapping("/{id}/adicionarOP")
-  public ResponseEntity<String> gerarOP(@PathVariable Long id , @RequestBody OrdemProducaoDTO op){
+  public ResponseEntity<String> gerarOP(@PathVariable Long id , @RequestBody OrdemProducaoDTOOv op){
 
     String message = service.gerarOrdemProducao(id,op);
 
@@ -111,7 +112,7 @@ return ResponseEntity.ok(message);
   }
 
   @PostMapping("/{id}/adicionarOPs")
-public ResponseEntity<String> gerarOps (@PathVariable Long id, @RequestBody List<OrdemProducaoDTO>dtos){
+public ResponseEntity<String> gerarOps (@PathVariable Long id, @RequestBody List<OrdemProducaoDTOOv>dtos){
     String message= service.gerarOrdensProducao(id, dtos);
     return ResponseEntity.ok(message);
 }
