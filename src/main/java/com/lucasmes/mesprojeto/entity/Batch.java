@@ -4,8 +4,13 @@ package com.lucasmes.mesprojeto.entity;
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Random;
+
 import com.lucasmes.mesprojeto.entity.enums.FinalQuality;
 import com.lucasmes.mesprojeto.entity.enums.StatusBatch;
+import com.lucasmes.mesprojeto.exceptions.BadQualityException;
+
+import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.EnumType;
 import jakarta.persistence.Enumerated;
@@ -29,29 +34,33 @@ public class Batch {
 
     @Id
     private String batchNumber;  
-
+  @Column(nullable = false)
      private Double weight;
+     @Column(nullable = false)
     private Double width;
+    @Column(nullable = false)
     private Double thickness;
+    @Column(nullable = false)
     private LocalDate startTime;
     private LocalDate finalDate;
     @Enumerated(EnumType.STRING)
     private StatusBatch status;
+    @Column(nullable = false)
     private FinalQuality quality;
+    @Column(nullable = false)
     private Double progress;
 
-    @ManyToOne(fetch = FetchType.LAZY)
-    @MapsId("resourceId") // Mapeia o campo 'resourceId' da chave composta para a coluna da FK
-    @JoinColumn(name = "resource_id")
-    private Resource resource;
+  @ManyToOne(fetch = FetchType.LAZY)
+  @JoinColumn(name = "batch_number")
+  ProductionOrder productionOrder;
 
 
   @OneToMany(mappedBy = "batch")
     private List<Operation> operations;
 
 
-    public Batch( String batchNumber,Double weight, Double width, Double thickness) {
-       this.batchNumber = batchNumber;
+    public Batch( Double weight, Double width, Double thickness) {
+       this.batchNumber = giveBatchNumber();
         this.weight = weight;
         this.width = width;
         this.thickness = thickness;
@@ -62,11 +71,40 @@ public class Batch {
        this.operations = new ArrayList<>();
     }
 
+      public boolean finishBatch(){
+        if(this.getQuality()==FinalQuality.BAD ||this.getQuality()==FinalQuality.REWORK){
+          throw new BadQualityException("Batch with bad quality");
+        }else{
 
+          this.setProgress(100.0);
+          this.setFinalDate(LocalDate.now());
+          return true;
+        }
+      }
+      public void putInRework(){
+
+        StringBuilder st=  new StringBuilder();
+    String batch=  st.append("RW").append(this.getBatchNumber()).toString();
+   this.setBatchNumber(batch);
+
+    }
+
+      public String giveBatchNumber(){
+     StringBuilder st=  new StringBuilder();
+     Random random = new Random();
+     int randomNumber = random.nextInt(100000, 999999);
+     return st.append("E").append(randomNumber).toString();
+    }
+
+    
+
+      }
+
+      
   
 
   
-   }
+   
 
 
    

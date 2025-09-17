@@ -56,6 +56,13 @@ public class Operation {
     }
 
 
+    public void finishOperationBatches(){
+     
+      this.getBatch().setFinalDate(LocalDate.now());
+    
+    }
+
+
 
 }
 

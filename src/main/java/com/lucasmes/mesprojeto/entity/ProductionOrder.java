@@ -1,11 +1,16 @@
 package com.lucasmes.mesprojeto.entity;
 
+import java.io.ObjectInputFilter.Status;
 import java.time.LocalDate;
+import java.util.ArrayList;
 import java.util.List;
 
+
 import com.lucasmes.mesprojeto.entity.enums.StatusOP;
+import com.lucasmes.mesprojeto.exceptions.NotAvailableProductionOrderException;
+import com.lucasmes.mesprojeto.exceptions.NotFoundProductionOrderException;
 
-
+import jakarta.persistence.CascadeType;
 import jakarta.persistence.Entity;
 
 import jakarta.persistence.Id;
@@ -25,19 +30,63 @@ public class ProductionOrder {
 
 
 
-@Id
+    @Id
     private String numberOp;
     private LocalDate startTime;
     private Double weight;
     private StatusOP statusOP;
-    private Double quantityProduced;
-    private Double quantityRejected;
+    private Integer quantityProduced;
+    private Integer quantityRejected;
+      private Integer limiteMaximoLotes;
 
+    @OneToMany(mappedBy = "ordemProducao", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<Batch> batches ;
     @OneToMany(mappedBy = "productionOrder")
-    private List<Batch> batchs;
+    List<Operation> operations;
 
-    @OneToMany(mappedBy = "productionOrder")
-    private List<Resource> resources;
 
+    public ProductionOrder(String numberOp,  Double weight,Integer limiteMaximoLotes) {
+        this.numberOp = numberOp;
+        this.startTime = LocalDate.now();
+        this.weight = weight;
+        this.statusOP = StatusOP.ABERTA;
+        this.quantityProduced = 0;
+        this.quantityRejected =0;
+        this.limiteMaximoLotes= limiteMaximoLotes;
+        batches = new ArrayList<>();
+       
+    }
+
+
+    public boolean verifyOP(){
+        if(this.getStatusOP()==StatusOP.CANCELADA ||this.getStatusOP()==StatusOP.PAUSADA){
+            throw new NotAvailableProductionOrderException("This order seems to be not available");
+        }else if(this.getStatusOP()==StatusOP.EM_EXECUCAO || this.getStatusOP()==StatusOP.CONCLUIDA){
+            throw new NotFoundProductionOrderException("This order seems to be already done");
+        }
+        else {
+            return true;
+        }
+    }
+
+    public void addQuantityProduced(){
+            this.setQuantityProduced(quantityProduced+1);
+    }
+    public void addQuantityRejected(){
+
+            this.setQuantityProduced(quantityProduced+1);
+    }
+
+    public void addBatch(Batch batch){
+        if(batches.size()>limiteMaximoLotes){ this.batches.add(batch);
+        batch.setProductionOrder(this);}else {
+            throw new IllegalStateException("Limited number reached");
+        }
+       
+    }
+public void removeBatch(Batch batch){
+        this.batches.remove(batch);
+        batch.setProductionOrder(null);
+    }
 
 }
