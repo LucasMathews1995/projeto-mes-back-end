@@ -7,6 +7,7 @@ import java.util.stream.Collectors;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import com.lucasmes.mesprojeto.DTO.OperationDTOSender;
 import com.lucasmes.mesprojeto.DTO.OperationIdDTO;
 import com.lucasmes.mesprojeto.entity.Batch;
 import com.lucasmes.mesprojeto.entity.Operation;
@@ -43,9 +44,16 @@ private ResourceRepository resourceRepository;
 
 
 
-public List<Operation> getAll(){
+public List<OperationDTOSender> getAll(){
     List<Operation> operations = repository.findAll();
-    return operations;
+    List<OperationDTOSender> senders = operations.stream().map(it->{
+        OperationDTOSender sender = new OperationDTOSender(it.getStartTime(),it.getProductionOrder().getProductionOrderName(),it.getResource().getNameArea(),it.getBatch().getBatchNumber());
+        return sender;
+    }).collect(Collectors.toList());
+
+    
+
+    return senders;
 }
 public Operation getOperation(String nameBatch, String resourceName, String opName){
     OperationId operationId = new OperationId();

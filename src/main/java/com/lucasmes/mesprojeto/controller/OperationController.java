@@ -13,6 +13,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.lucasmes.mesprojeto.DTO.OperationDTOSender;
 import com.lucasmes.mesprojeto.DTO.OperationIdDTO;
 import com.lucasmes.mesprojeto.entity.Operation;
 import com.lucasmes.mesprojeto.exceptions.NotFoundOperationException;
@@ -28,8 +29,8 @@ public class OperationController {
 
 
 @GetMapping()
-    public ResponseEntity<List<Operation>> getAllOperation(){
-        List<Operation> operations = service.getAll();
+    public ResponseEntity<List<OperationDTOSender>> getAllOperation(){
+        List<OperationDTOSender> operations = service.getAll();
 
 
         return ResponseEntity.ok(operations);

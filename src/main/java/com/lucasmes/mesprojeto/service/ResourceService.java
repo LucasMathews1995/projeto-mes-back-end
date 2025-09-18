@@ -7,6 +7,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import com.lucasmes.mesprojeto.DTO.ResourceDTOReceiver;
+import com.lucasmes.mesprojeto.DTO.ResourceSenderDTO;
 import com.lucasmes.mesprojeto.entity.Resource;
 import com.lucasmes.mesprojeto.entity.enums.CurrentStatus;
 import com.lucasmes.mesprojeto.exceptions.NotFoundResourceException;
@@ -20,15 +21,20 @@ private ResourceRepository repository;
 
 
 
-public Resource getEachById(String resourceName ){
+public ResourceSenderDTO getEachById(String resourceName ){
 Resource r = repository.findById(resourceName).orElseThrow(()-> new NotFoundResourceException("not found resource by this id"));
-return r;
+ResourceSenderDTO rDTO = new ResourceSenderDTO(r.getNameResource(), r.getNameArea(), r.getCurrentCapacity(), r.getFunction(), r.getCurrentStatus());
+return rDTO;
 }
 
-public  List<Resource> listAll(){
+public  List<ResourceSenderDTO> listAll(){
 
      List<Resource>  r = repository.findAll();
-    return r;
+     List<ResourceSenderDTO> sender = r.stream().map(it->{
+       ResourceSenderDTO rDTO = new ResourceSenderDTO(it.getNameResource(), it.getNameArea(), it.getCurrentCapacity(), it.getFunction(), it.getCurrentStatus());
+       return rDTO;
+     }).collect(Collectors.toList());
+    return sender;
 }
 
 
