@@ -3,6 +3,7 @@ package com.lucasmes.mesprojeto.entity;
 import com.lucasmes.mesprojeto.entity.enums.Function;
 import com.lucasmes.mesprojeto.entity.enums.StatusBatch;
 import com.lucasmes.mesprojeto.exceptions.NotAvailableResourceException;
+import com.lucasmes.mesprojeto.exceptions.OutOfCapacityException;
 
 import java.time.LocalDate;
 import java.util.ArrayList;
@@ -10,6 +11,8 @@ import java.util.List;
 import com.lucasmes.mesprojeto.entity.enums.CurrentStatus;
 import com.lucasmes.mesprojeto.entity.enums.FinalQuality;
 import jakarta.persistence.Entity;
+import jakarta.persistence.EnumType;
+import jakarta.persistence.Enumerated;
 import jakarta.persistence.FetchType;
 import jakarta.persistence.Id;
 import jakarta.persistence.ManyToMany;
@@ -33,7 +36,9 @@ public class Resource {
     private String nameResource;
     private String nameArea;
     private Double currentCapacity;
+    @Enumerated(EnumType.STRING)
     private Function function;
+     @Enumerated(EnumType.STRING)
     private CurrentStatus currentStatus;
    
 
@@ -66,6 +71,20 @@ public class Resource {
 return true;
         }
     }
+    public boolean verifyCapacity(Batch batch )throws OutOfCapacityException{
+      
+      if(batch.getWeight()> this.getCurrentCapacity()){
+      throw new OutOfCapacityException("Capacity exceeded");
+      }  else {
+        this.setCurrentCapacity(this.getCurrentCapacity() -batch.getWeight());
+        return true;
+      }
+
+    }
+    
+
+
+
 }
     
 

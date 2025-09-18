@@ -20,15 +20,17 @@ private ProductionOrderRepository repository;
 
 
     public ProductionOrder saveProductionOrder(ProductionOrderDTO dto){
-        ProductionOrder productionOrder = new ProductionOrder(dto.numberOp(),dto.weight());
+        ProductionOrder productionOrder = new ProductionOrder(dto.productionOrder(),dto.weight(),dto.maxLimit());
             return repository.save(productionOrder);
 
         
     }
+
+    
     public List<ProductionOrder> saveAllProductionOrder(List<ProductionOrderDTO> dto){
         List<ProductionOrder> productionOrders = dto.stream().map(it-> {
             ProductionOrder productionOrder = new ProductionOrder();
-            productionOrder.setNumberOp(it.numberOp());
+            productionOrder.setProductionOrder(it.productionOrder());
             productionOrder.setWeight(it.weight());
           return productionOrder;
             
@@ -40,8 +42,19 @@ private ProductionOrderRepository repository;
   return repository.saveAll(productionOrders);
 
     }
-   
 
+
+    public List<ProductionOrder> listAll() {
+      List<ProductionOrder> poList = repository.findAll();
+      return poList;
+
+    }
+   
+    public ProductionOrder findById(String id){
+      ProductionOrder po = repository.findById(id)
+      .orElseThrow(()-> new NotFoundProductionOrderException("there's no OP with this name"));
+    return po;
+    }
   
 
 }

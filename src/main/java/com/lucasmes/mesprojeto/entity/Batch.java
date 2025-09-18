@@ -18,7 +18,7 @@ import jakarta.persistence.FetchType;
 import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
-import jakarta.persistence.MapsId;
+
 import jakarta.persistence.OneToMany;
 import jakarta.persistence.Table;
 import lombok.Getter;
@@ -36,40 +36,36 @@ public class Batch {
     private String batchNumber;  
   @Column(nullable = false)
      private Double weight;
+     
      @Column(nullable = false)
     private Double width;
+
     @Column(nullable = false)
     private Double thickness;
+
     @Column(nullable = false)
     private LocalDate startTime;
+
     private LocalDate finalDate;
     @Enumerated(EnumType.STRING)
     private StatusBatch status;
+
     @Column(nullable = false)
+    @Enumerated(EnumType.STRING)
     private FinalQuality quality;
     @Column(nullable = false)
     private Double progress;
 
   @ManyToOne(fetch = FetchType.LAZY)
-  @JoinColumn(name = "batch_number")
+  @JoinColumn(name = "production_order")
   ProductionOrder productionOrder;
 
 
   @OneToMany(mappedBy = "batch")
-    private List<Operation> operations;
+    private List<Operation> operations= new ArrayList<>();
 
 
-    public Batch( Double weight, Double width, Double thickness) {
-       this.batchNumber = giveBatchNumber();
-        this.weight = weight;
-        this.width = width;
-        this.thickness = thickness;
-        this.status = StatusBatch.PROCESSANDO;
-        this.startTime = LocalDate.now();
-        this.progress = 0.0;
-       this.quality= FinalQuality.GOOD;
-       this.operations = new ArrayList<>();
-    }
+  
 
       public boolean finishBatch(){
         if(this.getQuality()==FinalQuality.BAD ||this.getQuality()==FinalQuality.REWORK){
@@ -86,7 +82,7 @@ public class Batch {
         StringBuilder st=  new StringBuilder();
     String batch=  st.append("RW").append(this.getBatchNumber()).toString();
    this.setBatchNumber(batch);
-
+   
     }
 
       public String giveBatchNumber(){
@@ -95,7 +91,14 @@ public class Batch {
      int randomNumber = random.nextInt(100000, 999999);
      return st.append("E").append(randomNumber).toString();
     }
-
+    public boolean initiateBatch(){
+      if(this.getStatus()== StatusBatch.CONCLUIDO || this.getStatus()== StatusBatch.CANCELADO ||this.getStatus()== StatusBatch.DUPLICADO){
+       throw new IllegalStateException("This batch is in conflict with status");
+      }else {
+        this.setStatus(StatusBatch.PROCESSANDO);
+        return true;
+      }
+    }
     
 
       }

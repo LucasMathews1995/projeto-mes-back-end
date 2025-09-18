@@ -1,7 +1,13 @@
 package com.lucasmes.mesprojeto.entity;
 
 import java.time.LocalDate;
+import java.util.List;
+
+import org.springframework.cglib.core.Local;
+
 import com.lucasmes.mesprojeto.entity.enums.StatusOperation;
+import com.lucasmes.mesprojeto.exceptions.NotFoundOperationException;
+
 import jakarta.persistence.EmbeddedId;
 import jakarta.persistence.Entity;
 import jakarta.persistence.EnumType;
@@ -26,8 +32,8 @@ public class Operation {
     private OperationId id;
 
     @ManyToOne
-    @MapsId("opName") 
-    @JoinColumn(name = "production_order_id", referencedColumnName = "id", insertable = false, updatable = false)
+    @MapsId("productionOrder") 
+    @JoinColumn(name = "production_order", referencedColumnName = "productionOrder", insertable = false, updatable = false)
     private ProductionOrder productionOrder;
 
     
@@ -56,11 +62,30 @@ public class Operation {
     }
 
 
-    public void finishOperationBatches(){
-     
-      this.getBatch().setFinalDate(LocalDate.now());
-    
+   
+ public void finishOperation(){
+  this.setEndTime(LocalDate.now());
+  this.setStatus(StatusOperation.FINISHED);
+  this.setBatch(null);
+  this.setResource(null);
+  this.setProductionOrder(null);
+
+ }
+ public void initiateOperation(){
+  this.setStatus(StatusOperation.PROCESSING);
+  
+ }
+ public void addOP(ProductionOrder pos,Batch batch,Resource resource){
+  this.setProductionOrder(pos);
+ List<Batch> batches =  pos.getBatches();
+    for(Batch batchEach: batches){
+      if(batchEach.equals(batch)){
+        this.setBatch(batch);
+      }
     }
+    this.setResource(resource);
+ }
+ 
 
 
 

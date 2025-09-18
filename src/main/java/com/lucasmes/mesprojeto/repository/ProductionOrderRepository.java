@@ -7,6 +7,8 @@ import com.lucasmes.mesprojeto.entity.ProductionOrder;
 import java.util.Optional;
 
 
+
+
 public interface ProductionOrderRepository  extends JpaRepository<ProductionOrder,String>{
-public Optional<ProductionOrder> findByNumberOp(String numberOp);
+public Optional<ProductionOrder> findByProductionOrder(String productionOrder);
 }

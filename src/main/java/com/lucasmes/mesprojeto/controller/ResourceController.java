@@ -17,7 +17,7 @@ import com.lucasmes.mesprojeto.exceptions.NotAvailableResourceException;
 import com.lucasmes.mesprojeto.service.ResourceService;
 
 @RestController
-@RequestMapping("resource")
+@RequestMapping("/resource")
 public class ResourceController {
 
 
@@ -42,7 +42,7 @@ public class ResourceController {
         return ResponseEntity.ok(resource);
     }
 
-    @PostMapping("saveall")
+    @PostMapping("/saveall")
     public ResponseEntity<List<Resource>> saveAllResources(@RequestBody List<ResourceDTOReceiver> resourcesDTO ){
         List<Resource> resources = service.saveAllResources(resourcesDTO);
 
@@ -50,7 +50,7 @@ public class ResourceController {
 
     }
 
-    @PostMapping("save")
+    @PostMapping("/save")
     public ResponseEntity<Resource> saveResource(@RequestBody ResourceDTOReceiver resourceDTO){
 
 Resource resource = service.saveResource(resourceDTO);

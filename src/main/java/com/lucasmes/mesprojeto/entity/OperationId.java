@@ -14,15 +14,15 @@ public class OperationId implements Serializable {
 
     private String batchNumber;
     private String resourceName;
-    private String opName;
+    private String productionOrder;
 
     public OperationId() {
     }
 
-    public OperationId(String batchNumber, String resourceName, String opName) {
+    public OperationId(String batchNumber, String resourceName, String productionOrder) {
         this.batchNumber = batchNumber;
         this.resourceName = resourceName;
-        this.opName = opName;
+        this.productionOrder = productionOrder;
     }
 
     @Override
@@ -32,11 +32,11 @@ public class OperationId implements Serializable {
         OperationId that = (OperationId) o;
         return Objects.equals(batchNumber, that.batchNumber) &&
                Objects.equals(resourceName, that.resourceName) &&
-               Objects.equals(opName, that.opName);
+               Objects.equals(productionOrder, that.productionOrder);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(batchNumber, resourceName, opName);
+        return Objects.hash(batchNumber, resourceName, productionOrder);
     }
 }

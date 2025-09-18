@@ -40,12 +40,13 @@ return repository.save(r);
 
 public List<Resource> saveAllResources(List<ResourceDTOReceiver> receivers){
 List<Resource> resources  = receivers.stream().map(it-> {
+
 Resource r = new Resource(it.nameResource(),it.nameArea(),it.currentCapacity());
 
 
 return r;
 }).collect(Collectors.toList());
-return resources;
+return repository.saveAll(resources);
 }
 
 

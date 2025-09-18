@@ -2,6 +2,7 @@ package com.lucasmes.mesprojeto.service;
 
 import java.time.LocalDate;
 import java.util.List;
+import java.util.stream.Collectors;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -14,7 +15,8 @@ import com.lucasmes.mesprojeto.entity.ProductionOrder;
 import com.lucasmes.mesprojeto.entity.Resource;
 import com.lucasmes.mesprojeto.entity.enums.CurrentStatus;
 import com.lucasmes.mesprojeto.entity.enums.FinalQuality;
-import com.lucasmes.mesprojeto.entity.enums.StatusBatch;
+
+import com.lucasmes.mesprojeto.entity.enums.StatusOP;
 import com.lucasmes.mesprojeto.entity.enums.StatusOperation;
 import com.lucasmes.mesprojeto.exceptions.NotAvailableBatchException;
 import com.lucasmes.mesprojeto.exceptions.NotAvailableResourceException;
@@ -22,6 +24,7 @@ import com.lucasmes.mesprojeto.exceptions.NotFoundBatchException;
 import com.lucasmes.mesprojeto.exceptions.NotFoundOperationException;
 import com.lucasmes.mesprojeto.exceptions.NotFoundProductionOrderException;
 import com.lucasmes.mesprojeto.exceptions.NotFoundResourceException;
+import com.lucasmes.mesprojeto.exceptions.OutOfCapacityException;
 import com.lucasmes.mesprojeto.repository.BatchRepository;
 import com.lucasmes.mesprojeto.repository.OperationRepository;
 import com.lucasmes.mesprojeto.repository.ProductionOrderRepository;
@@ -47,71 +50,92 @@ public List<Operation> getAll(){
 public Operation getOperation(String nameBatch, String resourceName, String opName){
     OperationId operationId = new OperationId();
     operationId.setResourceName(resourceName);
-    operationId.setOpName(opName);
+    operationId.setProductionOrder(opName);
     operationId.setBatchNumber(nameBatch);
     Operation op = repository.findById(operationId)
     .orElseThrow(()-> new NotFoundProductionOrderException("There's no production order with these params"));
     return op;
 }
 
-public Operation setOperation (OperationIdDTO dto) {
+public Operation setOperation (OperationIdDTO dto) throws OutOfCapacityException{
 
     if(dto.batchName()==null || dto.productionOrderName()==null || dto.resourceName()==null){
         throw new NotFoundOperationException("Send the params correctly");
     }
+
 Operation op = new Operation();
 OperationId operationId  = new OperationId(dto.batchName(),dto.resourceName(),dto.productionOrderName());
 op.setId(operationId);
-Batch batch  = retrieveBatch(dto.batchName());
-op.setBatch(batch);
+
 Resource resource = retrieveResource(dto.resourceName());
 op.setResource(resource);
+
 ProductionOrder productionOrder  = retrieveProductionOrder(dto.productionOrderName());
 op.setProductionOrder(productionOrder);
+
+Batch batch = retrieveBatch(dto.batchName());
+productionOrder.addBatch(batch);
+
 op.setStartTime(LocalDate.now());
 op.setStatus(StatusOperation.READY);
 
 
+ resource.verifyCapacity(batch); 
+ op.addOP(productionOrder, batch, resource);
 return repository.save(op);
+
+}
+public String  finishOperation(OperationIdDTO dto){
+
+OperationId id = retrieveOperationId(dto);
+Operation op = retrieveOperation(id);
+op.finishOperation();
+Batch batch = retrieveBatch(dto.batchName());
+ProductionOrder productionOrder = retrieveProductionOrder(dto.productionOrderName());
+productionOrder.removeBatch(batch);
+repository.save(op);
+return "This operation is finished ";
+
+}
+public String initiateOperation(OperationIdDTO dto){
+
+ OperationId id = retrieveOperationId(dto);
+Operation op = retrieveOperation(id);
+op.initiateOperation();
+Batch batch = retrieveBatch(dto.batchName());
+ProductionOrder productionOrder = retrieveProductionOrder(dto.productionOrderName());
+if(batch.initiateBatch()){
+productionOrder.setStatusOP(StatusOP.EM_EXECUCAO);
+
+  return "Operation was initialized ";
+}else {
+    return "Operation was not initialized because of the batch";
 }
 
-public Operation finishOperation(OperationIdDTO dto){
+}
+public List<Operation> setOperations(List<OperationIdDTO> dto){
 
-    Operation op = repository.findById(retrieveOperationId(dto))
-    .orElseThrow(()-> new NotFoundProductionOrderException("There's no production order with these params"));
     
-    op.setEndTime(LocalDate.now());
-    op.setStatus(StatusOperation.FINISHED);
-    op.getBatch().setFinalDate(LocalDate.now());
-    op.getBatch().setResource(null);
-    op.getBatch().setProgress(100.0);
-    op.getBatch().setStatus(StatusBatch.CONCLUIDO);
-  
-    return repository.save(op);
+    List<Operation> operations = dto.stream().map(it-> {
+       if(it.batchName()==null || it.productionOrderName()==null || it.resourceName()==null){
+        throw new NotFoundOperationException("Send the params correctly");
+    }
+      Operation op = new Operation();
+      OperationId operationId = new OperationId(it.batchName(),it.resourceName(),it.productionOrderName());
+      op.setId(operationId);
+Resource resource = retrieveResource(it.resourceName());
+op.setResource(resource);
+ProductionOrder productionOrder  = retrieveProductionOrder(it.productionOrderName());
+op.setProductionOrder(productionOrder);
+productionOrder.addBatch(retrieveBatch(it.batchName()));
+op.setStartTime(LocalDate.now());
+op.setStatus(StatusOperation.READY);
+return op;
+    }).collect(Collectors.toList());
+
+
+return operations;
 }
-public Operation initiateOperation(OperationIdDTO dto){
-     Operation op = repository.findById(retrieveOperationId(dto))
-    .orElseThrow(()-> new NotFoundProductionOrderException("There's no production order with these params"));
-
-    op.setStatus(StatusOperation.PROCESSING);
-    op.getBatch().setStartTime(LocalDate.now());
-
-    return repository.save(op);
-}
- 
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 
 
@@ -150,12 +174,19 @@ return resource;
 private ProductionOrder retrieveProductionOrder (String productionOrderName){
 return opRepository.findById(productionOrderName).orElseThrow(()-> new NotFoundProductionOrderException("There's no such Production Order"));
 }
+
+
+
 private OperationId retrieveOperationId(OperationIdDTO dto){
  OperationId operationId = new OperationId();
  operationId.setResourceName(dto.resourceName());
-    operationId.setOpName(dto.productionOrderName());
+    operationId.setProductionOrder(dto.productionOrderName());
     operationId.setBatchNumber(dto.batchName());
     return operationId;
+}
+private Operation retrieveOperation (OperationId id ){
+Operation operation = repository.findById(id).orElseThrow(()-> new NotFoundOperationException("There's no such operation in course"));
+return operation;
 }
 
 }
