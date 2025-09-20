@@ -3,10 +3,9 @@ package com.lucasmes.mesprojeto.entity;
 import java.time.LocalDate;
 import java.util.List;
 
-import org.springframework.cglib.core.Local;
 
-import com.lucasmes.mesprojeto.entity.enums.StatusOperation;
-import com.lucasmes.mesprojeto.exceptions.NotFoundOperationException;
+import com.lucasmes.mesprojeto.entity.enums.operation.StatusOperation;
+
 
 import jakarta.persistence.EmbeddedId;
 import jakarta.persistence.Entity;

@@ -1,21 +1,21 @@
 package com.lucasmes.mesprojeto.entity;
 
-import com.lucasmes.mesprojeto.entity.enums.Function;
-import com.lucasmes.mesprojeto.entity.enums.StatusBatch;
+
+import com.lucasmes.mesprojeto.entity.enums.resource.CurrentStatus;
+import com.lucasmes.mesprojeto.entity.enums.resource.Function;
 import com.lucasmes.mesprojeto.exceptions.NotAvailableResourceException;
 import com.lucasmes.mesprojeto.exceptions.OutOfCapacityException;
 
-import java.time.LocalDate;
+
 import java.util.ArrayList;
 import java.util.List;
-import com.lucasmes.mesprojeto.entity.enums.CurrentStatus;
-import com.lucasmes.mesprojeto.entity.enums.FinalQuality;
+
 import jakarta.persistence.Entity;
 import jakarta.persistence.EnumType;
 import jakarta.persistence.Enumerated;
-import jakarta.persistence.FetchType;
+
 import jakarta.persistence.Id;
-import jakarta.persistence.ManyToMany;
+
 
 import jakarta.persistence.OneToMany;
 import jakarta.persistence.Table;
@@ -78,9 +78,19 @@ return true;
       }  else {
         this.setCurrentCapacity(this.getCurrentCapacity() -batch.getWeight());
         return true;
+
+        
       }
 
+      
+
     }
+
+    public void releasedResource(){
+      this.setNameArea("None");
+this.setNameResource("None");
+    }
+    
     
 
 

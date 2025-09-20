@@ -1,12 +1,11 @@
 package com.lucasmes.mesprojeto.entity;
 
-import java.io.ObjectInputFilter.Status;
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
 
-import com.lucasmes.mesprojeto.entity.enums.StatusOP;
+import com.lucasmes.mesprojeto.entity.enums.productiononder.StatusOP;
 import com.lucasmes.mesprojeto.exceptions.NotAvailableProductionOrderException;
 import com.lucasmes.mesprojeto.exceptions.NotFoundProductionOrderException;
 
@@ -76,6 +75,7 @@ public class ProductionOrder {
         if (batches.size() < getLimiteMaximoLotes()) {
             this.batches.add(batch);
             batch.setProductionOrder(this);
+            setLimiteMaximoLotes(getLimiteMaximoLotes()-1);
         } else {
             throw new IllegalStateException("Limited number reached");
         }
@@ -83,16 +83,10 @@ public class ProductionOrder {
     }
 
     public void removeBatch(Batch batch) {
-        if (batch.finishBatch()) {
-            this.addQuantityProduced();
+            
             this.batches.remove(batch);
             batch.setProductionOrder(null);
-        } else {
-            this.addQuantityRejected();
-            this.batches.remove(batch);
-            batch.setProductionOrder(null);
-        }
-
+        
     }
     public String getProductionOrderName(){
         StringBuilder st= new StringBuilder();

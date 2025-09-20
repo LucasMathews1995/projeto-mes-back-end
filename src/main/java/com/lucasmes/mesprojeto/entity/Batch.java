@@ -6,9 +6,8 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
 
-import com.lucasmes.mesprojeto.entity.enums.FinalQuality;
-import com.lucasmes.mesprojeto.entity.enums.StatusBatch;
-import com.lucasmes.mesprojeto.exceptions.BadQualityException;
+import com.lucasmes.mesprojeto.entity.enums.batch.FinalQuality;
+import com.lucasmes.mesprojeto.entity.enums.batch.StatusBatch;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
@@ -65,22 +64,29 @@ public class Batch {
     private List<Operation> operations= new ArrayList<>();
 
 
-  
+    public Batch(String batchNumber,Double weight, Double width,Double thickness ){
+      
+      this.startTime = LocalDate.now();
+      this.status= StatusBatch.PROCESSANDO;
+    this.quality = FinalQuality.GOOD;
+    this.progress = 0.0;
+    }
 
-      public boolean finishBatch(){
-        if(this.getQuality()==FinalQuality.BAD ||this.getQuality()==FinalQuality.REWORK){
-          throw new BadQualityException("Batch with bad quality");
-        }else{
+      public void finishBatch(){
+        
 
           this.setProgress(100.0);
           this.setFinalDate(LocalDate.now());
-          return true;
+       
         }
-      }
+      
       public void putInRework(){
 
         StringBuilder st=  new StringBuilder();
     String batch=  st.append("RW").append(this.getBatchNumber()).toString();
+    this.setQuality(FinalQuality.REWORK);
+    this.setProgress(0.0);
+    
    this.setBatchNumber(batch);
    
     }
@@ -99,6 +105,21 @@ public class Batch {
         return true;
       }
     }
+
+    public List<Batch> splitBatch (Double splitWeight,Batch original){
+      
+      Double weightResult = original.weight - splitWeight;
+      Integer batchNumber = Integer.parseInt(original.getBatchNumber()+1);
+      Integer batchNumber2 = Integer.parseInt(original.getBatchNumber()+2);
+      List<Batch> batches  = new ArrayList<>();
+      Batch batch = new Batch(batchNumber.toString(),splitWeight,original.getWidth(),original.getThickness());
+      Batch batch2 = new Batch(batchNumber2.toString(),weightResult,original.getWidth(),original.getThickness());
+      batches.add(batch2);
+      batches.add(batch);
+      return batches;
+    }
+  
+   
     
 
       }
